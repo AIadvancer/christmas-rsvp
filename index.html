@@ -406,8 +406,17 @@
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
-  <script src="js/config.js"></script>
-  <script src="js/main.js"></script>
-  <script src="js/rsvp.js"></script>
+  <!-- Load scripts with a fresh ?v= each visit so browsers never show stale party settings -->
+  <script>
+    (function () {
+      var v = Date.now();
+      ["js/config.js", "js/main.js", "js/rsvp.js"].forEach(function (src) {
+        var s = document.createElement("script");
+        s.src = src + "?v=" + v;
+        s.async = false; // keep them running in order
+        document.body.appendChild(s);
+      });
+    })();
+  </script>
 </body>
 </html>
