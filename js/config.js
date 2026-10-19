@@ -9,7 +9,7 @@ window.PARTY_CONFIG = {
   scriptUrl: "https://script.google.com/macros/s/AKfycbz6dPoS6WKyzLHDC7yqx7JXx5w_UCc8ocsPpi6cD6IRq4eZrvA-Zz3RMJqpaUEu2sbkdA/exec",
 
   // Party start, in your local time. Format: "YYYY-MM-DDTHH:MM"
-  partyDate: "2026-18-12T18:00",   // <-- CHANGE ME
+  partyDate: "2026-12-18T18:00",   // <-- CHANGE ME
 
   // Shown under the title. Leave any of these "" to hide that part.
   venue: "The Shop",           // <-- CHANGE ME
