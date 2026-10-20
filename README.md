@@ -45,32 +45,55 @@ Click **Share** in the Google Sheet and add the people who need to see RSVPs as 
 
 ## Step 4: Put it on GitHub Pages
 
-1. Create a new repository on GitHub (for example `christmas-rsvp`). It must be **public** for free GitHub Pages (paid plans can publish from private repos).
-2. Upload all of these files (drag and drop on the repo page works: **Add file → Upload files**). Keep the folder structure.
-3. Go to **Settings → Pages**, set **Source: Deploy from a branch**, **Branch: `main` / `(root)`**, and click **Save**.
-4. After a minute it's live at `https://<your-username>.github.io/christmas-rsvp/`. Next, point your domain at it.
+The site's repo is **https://github.com/AIadvancer/christmas-rsvp**. It must stay **public** for free GitHub Pages.
+
+- To update the site later, open the repo and use **Add file → Upload files** to drag in the changed files (keep the folder structure). Click **Commit changes**. The live site updates within a minute or two.
+- Then follow Step 4b to turn on Pages and connect the domain.
 
 ## Step 4b: Use your domain (mhchristmas.com)
 
 The `CNAME` file in this folder already tells GitHub Pages the site lives at **mhchristmas.com**. Upload it with everything else.
 
-1. In GitHub, go to **Settings → Pages → Custom domain**, enter `mhchristmas.com`, and click **Save**.
-2. At the company where you bought the domain (GoDaddy, Namecheap, Squarespace, etc.), open the domain's **DNS settings** and add these records. Delete any existing "parked" or "forwarding" `A` records for `@` first.
+### A. Turn on GitHub Pages
 
-   | Type  | Host / Name | Value |
-   |-------|-------------|-------|
-   | A     | @           | 185.199.108.153 |
-   | A     | @           | 185.199.109.153 |
-   | A     | @           | 185.199.110.153 |
-   | A     | @           | 185.199.111.153 |
-   | CNAME | www         | `<your-username>.github.io` |
+1. Open the repo at https://github.com/AIadvancer/christmas-rsvp and click **Settings**, then **Pages** in the left sidebar.
+2. Under **Build and deployment**, set **Source** to *Deploy from a branch*. Set **Branch** to `main`, the folder to `/ (root)`, and click **Save**.
+3. Under **Custom domain**, make sure it says `mhchristmas.com`. GitHub usually fills this in from the `CNAME` file. If not, type it in and click **Save**. It will show a DNS error until you finish part B. That's expected.
 
-3. Wait for DNS to update. That's usually under an hour, but it can take up to a day. GitHub shows a green "DNS check successful" when it's working.
-4. Once it's available, check **Enforce HTTPS** in the same Pages settings so the site gets the padlock.
+### B. Point the domain at GitHub (Namecheap)
 
-Both `mhchristmas.com` and `www.mhchristmas.com` will then open the RSVP page.
+1. Sign in at [namecheap.com](https://www.namecheap.com) and go to **Account → Domain List**.
+2. Next to **mhchristmas.com**, click **Manage**.
+3. On the **Domain** tab, find **Nameservers** and make sure it's set to **Namecheap BasicDNS**. If you change it, click the green ✓ to save.
+4. Click the **Advanced DNS** tab at the top.
+5. Under **Host Records**, delete Namecheap's parking records by clicking the 🗑 trash icon on each one:
+   - **URL Redirect Record** for `@` (redirects to `http://www.mhchristmas.com/`)
+   - **CNAME Record** for `www` pointing to `parkingpage.namecheap.com`
+6. Click **Add New Record** for each row below. Pick the type from the dropdown, fill in **Host** and **Value**, leave **TTL** on *Automatic*, and click the green ✓ to save each row.
 
-> Tip: GitHub recommends verifying your domain (**Profile Settings → Pages → Add a domain**) so nobody else can claim it for their own GitHub Pages site.
+   | Type         | Host  | Value                   |
+   |--------------|-------|-------------------------|
+   | A Record     | `@`   | `185.199.108.153`       |
+   | A Record     | `@`   | `185.199.109.153`       |
+   | A Record     | `@`   | `185.199.110.153`       |
+   | A Record     | `@`   | `185.199.111.153`       |
+   | CNAME Record | `www` | `aiadvancer.github.io.` |
+
+   Type the Host exactly as shown: just `@` or `www`. Namecheap adds `.mhchristmas.com` for you, so don't type the full domain. The trailing dot on the CNAME value is fine; Namecheap accepts it with or without the dot.
+7. When you're done, **Host Records** should list exactly those 5 records and nothing else for `@` or `www`. Leave any **Mail Settings** alone.
+
+### C. Finish up in GitHub
+
+1. Wait for the DNS change to spread. On Namecheap this is usually 15–30 minutes, but it can take a few hours.
+2. Go back to **Settings → Pages** in GitHub. When it shows **"DNS check successful"**, check **Enforce HTTPS**. If that box is grayed out, GitHub is still issuing the security certificate. Check back in an hour or so.
+3. Visit https://mhchristmas.com and https://www.mhchristmas.com. Both should show the RSVP page with the padlock.
+
+> **Optional, recommended:** verify the domain so nobody else can attach it to their own GitHub Pages site. In GitHub, click your profile picture → **Settings → Pages → Add a domain** and enter `mhchristmas.com`. GitHub shows a **TXT record** to add. In Namecheap's **Advanced DNS**, click **Add New Record → TXT Record**. For **Host**, paste only the part *before* `.mhchristmas.com` (it starts with `_github-pages-challenge-`). For **Value**, paste the code GitHub gave you. Save it, then click **Verify** in GitHub.
+
+**If something's off:**
+- *Namecheap parking page still shows up:* one of the parking records from step B5 is still there, or your browser cached the old page. Try a private/incognito window.
+- *GitHub says "improperly configured":* double-check the four `A` records for typos, and make sure no other `A`, `AAAA`, or `URL Redirect` records exist for `@`.
+- *A 404 page from GitHub:* Pages is pointed at the wrong branch or folder. Re-check part A, step 2.
 
 ## Step 5: Test it
 
