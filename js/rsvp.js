@@ -276,6 +276,7 @@
       F.santaSay("I'll save you a candy cane anyway.");
     }
     F.refreshHeadcount();
+    try { localStorage.setItem("rsvpDone", "1"); } catch (_) { /* only used to tailor the game's reminder */ }
   }
 
   $("#edit-btn").addEventListener("click", () => {

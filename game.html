@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <title>Kudzu Survivors: Holiday Overtime</title>
+  <meta name="description" content="A Moorhead holiday clearing operation. Survive the festive overgrowth. (Then go RSVP.)">
+  <meta name="theme-color" content="#14213d">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎄</text></svg>">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Alfa+Slab+One&family=Special+Elite&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #2b1d14; --paper: #fbf4e6; --paper-2: #f1e6cf; --red: #c8312b; --red-dk: #8f1f1a;
+      --green: #1f5a43; --green-dk: #143d2d; --gold: #e2a63b; --gold-lt: #f6d27a; --night: #14213d; --blue: #1f6fc5;
+      --font-script: "Lobster", cursive; --font-slab: "Alfa Slab One", Georgia, serif;
+      --font-type: "Special Elite", "Courier New", monospace; --font-body: "Nunito", system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; overflow: hidden; background: var(--night); color: var(--ink); font-family: var(--font-body); }
+    #game { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; cursor: crosshair; }
+
+    .topbar {
+      position: fixed; top: 10px; right: 10px; z-index: 5; display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end;
+    }
+    .tb-btn {
+      display: inline-flex; align-items: center; gap: 6px; padding: 8px 12px;
+      font-family: var(--font-type); font-size: .9rem; text-decoration: none; cursor: pointer;
+      color: var(--ink); background: var(--paper); border: 2px solid var(--ink); border-radius: 999px; box-shadow: 3px 3px 0 var(--ink);
+    }
+    .tb-btn.rsvp { background: var(--gold); font-family: var(--font-slab); }
+    .tb-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 var(--ink); }
+
+    .overlay {
+      position: fixed; inset: 0; z-index: 10; display: grid; place-items: center; padding: 16px;
+      background: rgba(10, 16, 32, .72); backdrop-filter: blur(2px);
+    }
+    .overlay[hidden] { display: none; }
+    .panel {
+      width: min(640px, 100%); max-height: calc(100vh - 32px); overflow: auto;
+      background: var(--paper); border: 3px solid var(--ink); border-radius: 16px; box-shadow: 8px 8px 0 var(--ink);
+      padding: 26px clamp(16px, 5vw, 34px); text-align: center; position: relative;
+      animation: pop .35s cubic-bezier(.3,1.6,.5,1);
+    }
+    .panel::before { content: ""; position: absolute; inset: 8px; border: 2px solid var(--red); border-radius: 10px; pointer-events: none; }
+    @keyframes pop { from { transform: scale(.85); opacity: 0; } to { transform: none; opacity: 1; } }
+    .kicker { font-family: var(--font-type); letter-spacing: .12em; text-transform: uppercase; font-size: .8rem; color: var(--red); margin: 0 0 4px; }
+    .panel h1, .panel h2 { margin: 0; line-height: 1; }
+    .panel h1 { font-family: var(--font-slab); font-weight: 400; font-size: clamp(2rem, 7vw, 3.1rem); color: var(--green); text-shadow: 3px 3px 0 var(--gold-lt); }
+    .panel h1 span { display: block; font-family: var(--font-script); color: var(--red); font-size: .62em; margin-top: 6px; text-shadow: none; }
+    .panel h2 { font-family: var(--font-script); font-weight: 400; font-size: clamp(2rem, 6vw, 2.6rem); color: var(--red); text-shadow: 2px 2px 0 var(--gold-lt); }
+    .panel p { margin: 10px 0; line-height: 1.45; }
+    .story { font-size: 1rem; color: #4a3828; }
+    .controls { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin: 14px 0; font-family: var(--font-type); font-size: .85rem; }
+    .controls span { background: var(--paper-2); border: 2px solid var(--ink); border-radius: 8px; padding: 6px 10px; }
+    .btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 18px; }
+    .btn {
+      padding: 13px 22px; cursor: pointer; text-decoration: none;
+      font-family: var(--font-slab); font-size: 1.1rem; color: var(--paper);
+      background: var(--red); border: 3px solid var(--ink); border-radius: 12px; box-shadow: 5px 5px 0 var(--ink);
+    }
+    .btn.alt { background: var(--paper); color: var(--ink); }
+    .btn.gold { background: var(--gold); color: var(--ink); }
+    .btn:active { transform: translate(3px, 3px); box-shadow: 2px 2px 0 var(--ink); }
+    .best { font-family: var(--font-type); font-size: .9rem; color: var(--green); }
+
+    .cards { display: grid; gap: 12px; margin-top: 16px; text-align: left; }
+    .card {
+      display: grid; grid-template-columns: 54px 1fr; gap: 12px; align-items: center;
+      padding: 12px 14px; cursor: pointer; font: inherit; color: inherit; text-align: left;
+      background: #fffdf7; border: 3px solid var(--ink); border-radius: 12px; box-shadow: 4px 4px 0 var(--ink);
+      transition: transform .12s;
+    }
+    .card:hover, .card:focus-visible { transform: translate(-2px, -2px) rotate(-.5deg); outline: none; background: #fff6dc; }
+    .card-icon { font-size: 2rem; display: grid; place-items: center; width: 54px; height: 54px; background: var(--paper-2); border: 2px solid var(--ink); border-radius: 10px; }
+    .card b { font-family: var(--font-slab); font-weight: 400; font-size: 1.05rem; }
+    .card .lvl { font-family: var(--font-type); font-size: .78rem; color: #fff; background: var(--green); border-radius: 6px; padding: 1px 6px; margin-left: 6px; }
+    .card .lvl.new { background: var(--red); }
+    .card small { display: block; color: #5a4636; margin-top: 3px; font-size: .9rem; }
+    .card kbd { font-family: var(--font-type); font-size: .75rem; opacity: .6; float: right; }
+
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 16px 0 6px; }
+    .stat { background: var(--paper-2); border: 2px solid var(--ink); border-radius: 10px; padding: 10px 6px; }
+    .stat b { display: block; font-family: var(--font-slab); font-weight: 400; font-size: 1.5rem; color: var(--green); }
+    .stat span { font-family: var(--font-type); font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; }
+    .rsvp-nudge { margin-top: 16px; padding: 10px; font-family: var(--font-type); font-size: .9rem; border: 2px dashed var(--red); border-radius: 10px; }
+    .rsvp-nudge a { color: var(--red); font-weight: 700; }
+  </style>
+</head>
+<body>
+  <canvas id="game" aria-label="Kudzu Survivors game area"></canvas>
+
+  <div class="topbar">
+    <button class="tb-btn" id="pause-btn" type="button" aria-label="Pause">❚❚ Pause</button>
+    <button class="tb-btn" id="mute-btn" type="button" aria-pressed="false">🔊 Sound</button>
+    <a class="tb-btn rsvp" href="index.html#rsvp">🎄 RSVP</a>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="panel" id="panel"></div>
+  </div>
+
+  <!-- Fresh ?v= each visit so browsers never run a stale copy -->
+  <script>
+    (function () {
+      var s = document.createElement("script");
+      s.src = "js/game.js?v=" + Date.now();
+      document.body.appendChild(s);
+    })();
+  </script>
+</body>
+</html>
