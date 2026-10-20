@@ -6,6 +6,7 @@
 
   const CFG = window.PARTY_CONFIG || {};
   const F = window.Festive;
+  const sfx = (name, arg) => { if (window.Sound) window.Sound.play(name, arg); };
   const $ = (sel) => document.querySelector(sel);
   const form = $("#rsvp-form");
   const sizes = CFG.shirtSizes || [["S", "Small"], ["M", "Medium"], ["L", "Large"], ["XL", "XL"]];
@@ -42,6 +43,7 @@
     sizeBox.appendChild(l);
   });
   sizeBox.addEventListener("change", (e) => {
+    sfx("sizeNote", sizes.findIndex(([v]) => v === e.target.value));
     $("#size-quip").textContent = SIZE_QUIPS[e.target.value] || "Excellent choice.";
     clearError("shirtSize");
   });
@@ -51,6 +53,7 @@
   form.addEventListener("change", (e) => {
     if (e.target.name !== "attending") return;
     clearError("attending");
+    sfx(e.target.value === "Yes" ? "yes" : "no");
     const coming = e.target.value === "Yes";
     attendingBox.classList.toggle("collapsed", !coming);
     attendingBox.inert = !coming;
@@ -69,7 +72,7 @@
 
   extraSel.add(new Option("No, that's everyone", "0"));
   for (let i = 1; i <= maxExtra; i++) extraSel.add(new Option(`${i} more`, String(i)));
-  extraSel.addEventListener("change", renderGuestControls);
+  extraSel.addEventListener("change", () => { sfx(extraSel.value === "0" ? "unpop" : "pop"); renderGuestControls(); });
 
   function extraCount() {
     return extraBox.hidden ? 0 : Number(extraSel.value) || 0;
@@ -89,6 +92,7 @@
   function addGuest() {
     if (guestCount >= namedGuests) return;
     guestCount++;
+    sfx("pop");
     const n = guestCount;
     const row = document.createElement("div");
     row.className = "guest";
@@ -116,6 +120,7 @@
   function removeGuest() {
     if (guestCount === 0) return;
     guestCount--;
+    sfx("unpop");
     const rows = guestBox.querySelectorAll(".guest:not(.leaving)");
     const last = rows[rows.length - 1];
     if (last) {
@@ -213,11 +218,13 @@
     status.textContent = "";
     const d = collect();
     if (!validate(d)) {
+      sfx("error");
       F.santaSay("Hmm, something's missing. Check the red writing.");
       return;
     }
 
     btn.classList.add("sending");
+    sfx("whoosh");
     btn.disabled = true;
     try {
       const result = await send(d);
@@ -225,6 +232,7 @@
       showSuccess(d, result);
     } catch (err) {
       console.error(err);
+      sfx("error");
       status.textContent = "The elves dropped your RSVP in the snow. Please try again in a moment.";
       F.santaSay("Uh oh. The North Pole Wi-Fi is acting up. Try again?");
     } finally {
@@ -269,10 +277,13 @@
     $("#rsvp").scrollIntoView({ behavior: "smooth", block: "start" });
 
     if (coming) {
+      sfx("fanfare");
+      setTimeout(() => sfx("ho"), 900);
       F.confetti();
       F.flySleigh();
       F.santaSay(`Ho ho ho! ${first} is officially on my list!`, { wink: true });
     } else {
+      sfx("sadTrombone");
       F.santaSay("I'll save you a candy cane anyway.");
     }
     F.refreshHeadcount();

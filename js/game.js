@@ -36,7 +36,9 @@
   };
 
   /* ---------- Sound (tiny synth, no files) ---------- */
-  let muted = store.get("kudzuMuted", false);
+  // Shares the site-wide mute setting (js/sound.js) so muting anywhere mutes everywhere.
+  let muted = window.Sound ? window.Sound.muted : false;
+  if (window.Sound) window.Sound.onChange((m) => { muted = m; renderMute(); });
   let actx = null;
   let soundBudget = 0;
   function audio() {
@@ -1145,7 +1147,10 @@
   /* ---------- Buttons ---------- */
   const muteBtn = document.getElementById("mute-btn");
   function renderMute() { muteBtn.textContent = muted ? "🔇 Muted" : "🔊 Sound"; muteBtn.setAttribute("aria-pressed", String(muted)); }
-  muteBtn.addEventListener("click", () => { muted = !muted; store.set("kudzuMuted", muted); renderMute(); });
+  muteBtn.addEventListener("click", () => {
+    if (window.Sound) window.Sound.toggle();
+    else { muted = !muted; renderMute(); }
+  });
   renderMute();
   document.getElementById("pause-btn").addEventListener("click", () => { if (S.mode === "play" || S.mode === "paused") togglePause(); });
 

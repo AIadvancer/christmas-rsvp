@@ -88,7 +88,7 @@
     .rsvp-nudge a { color: var(--red); font-weight: 700; }
   </style>
 </head>
-<body>
+<body data-no-sound-button="1">
   <canvas id="game" aria-label="Kudzu Survivors game area"></canvas>
 
   <div class="topbar">
@@ -104,9 +104,13 @@
   <!-- Fresh ?v= each visit so browsers never run a stale copy -->
   <script>
     (function () {
-      var s = document.createElement("script");
-      s.src = "js/game.js?v=" + Date.now();
-      document.body.appendChild(s);
+      var v = Date.now();
+      ["js/sound.js", "js/game.js"].forEach(function (src) {
+        var s = document.createElement("script");
+        s.src = src + "?v=" + v;
+        s.async = false;
+        document.body.appendChild(s);
+      });
     })();
   </script>
 </body>

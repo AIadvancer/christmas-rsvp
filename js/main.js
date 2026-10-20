@@ -8,6 +8,7 @@
   const $ = (sel) => document.querySelector(sel);
   const rand = (min, max) => Math.random() * (max - min) + min;
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const sfx = (name, arg) => { if (window.Sound) window.Sound.play(name, arg); };
 
   /* ---------- Toast ---------- */
   let toastTimer;
@@ -33,6 +34,7 @@
   let mode = 0;
   let bulbs = [];
   let tick = 0;
+  let powered = !document.body.classList.contains("intro-running");
 
   function drawLights() {
     const svg = $("#lights-svg");
@@ -78,7 +80,7 @@
         const holder = document.createElementNS(ns, "g");
         holder.setAttribute("transform", `translate(${x.toFixed(1)} ${(y - 1).toFixed(1)}) rotate(${angle.toFixed(1)})`);
         const g = document.createElementNS(ns, "g");
-        g.setAttribute("class", "bulb on");
+        g.setAttribute("class", powered ? "bulb on" : "bulb off");
         g.style.setProperty("--c", color);
         g.innerHTML =
           `<rect class="socket" x="-4.5" y="-1" width="9" height="10" rx="1.5"/>` +
@@ -98,11 +100,13 @@
     if (bulb.broken) {
       bulb.broken = false;
       bulb.el.classList.remove("broken");
+      sfx("screw");
       toast(pick(FIX_LINES));
       return;
     }
     bulb.broken = true;
     bulb.el.classList.add("broken");
+    sfx("shatter");
     const ns = "http://www.w3.org/2000/svg";
     for (let i = 0; i < 6; i++) {
       const s = document.createElementNS(ns, "path");
@@ -120,6 +124,7 @@
   }
 
   function animateLights() {
+    if (!powered) return;
     tick++;
     const m = MODES[mode];
     bulbs.forEach((b, i) => {
@@ -134,9 +139,25 @@
 
   function setMode(next) {
     mode = next;
+    if (MODES[mode] === "Full Griswold") sfx("plugIn");
     document.body.classList.toggle("griswold", MODES[mode] === "Full Griswold");
     $("#mode-btn").textContent = `Lights: ${MODES[mode]}`;
     animateLights();
+  }
+
+  // Lights flick on one by one, left to right (used when the intro finishes).
+  function powerOnLights() {
+    if (powered) return;
+    sfx("plugIn");
+    bulbs.forEach((b, i) => {
+      setTimeout(() => {
+        b.el.classList.remove("off");
+        b.el.classList.add("on");
+        sfx("bulbOn", i);
+        if (i === bulbs.length - 1) powered = true;
+      }, 120 + i * 45);
+    });
+    if (!bulbs.length) powered = true;
   }
 
   /* ---------- Snow ---------- */
@@ -223,6 +244,7 @@
     bubble.textContent = "";
     typingTimer = setInterval(() => {
       bubble.textContent = text.slice(0, ++i);
+      if (i % 2 === 0 && text[i - 1] !== " ") sfx("blip");
       if (i >= text.length) {
         clearInterval(typingTimer);
         svg.classList.remove("talking");
@@ -259,6 +281,7 @@
       svg.classList.remove("jiggle");
       void svg.getBoundingClientRect();
       svg.classList.add("jiggle");
+      sfx(pokes % 3 === 1 ? "ho" : "boing");
       const r = btn.getBoundingClientRect();
       floatHo(e.clientX || r.left + r.width / 2, e.clientY || r.top + r.height / 3);
       if (pokes === 7) santaSay("Okay, that tickles. Go fill out the form, you goof.", { wink: true });
@@ -357,10 +380,12 @@
     s.classList.remove("fly");
     void s.getBoundingClientRect();
     s.classList.add("fly");
+    sfx("sleigh");
   }
 
   /* ---------- Confetti / snow burst ---------- */
   function confetti(count = 90) {
+    sfx("confetti");
     const colors = ["#c8312b", "#1f5a43", "#e2a63b", "#fbf4e6", "#3b82f6"];
     const w = window.innerWidth, h = window.innerHeight;
     for (let i = 0; i < count; i++) {
@@ -384,20 +409,34 @@
   }
 
   /* ---------- Jingle Bells (synthesized, no audio files) ---------- */
-  let audioCtx = null;
-  function playJingle() {
+  let jingleNodes = null;
+  let jingleTimer = null;
+  function stopJingle() {
+    if (!jingleNodes) return;
+    jingleNodes.forEach((n) => { try { n.stop(); } catch (_) { /* already stopped */ } });
+    jingleNodes = null;
+    clearTimeout(jingleTimer);
     const btn = $("#jingle-btn");
-    if (audioCtx) { audioCtx.close(); audioCtx = null; btn.setAttribute("aria-pressed", "false"); btn.innerHTML = "&#9835; Play a jingle"; return; }
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    btn.setAttribute("aria-pressed", "false");
+    btn.innerHTML = "&#9835; Play a jingle";
+  }
+  function playJingle() {
+    if (jingleNodes) { stopJingle(); return; }
+    if (!window.Sound) return;
+    if (window.Sound.muted) window.Sound.setMuted(false); // asking for music means sound on
+    const ctx = window.Sound.context();
+    const out = window.Sound.output();
+    if (!ctx || !out) return;
+    const btn = $("#jingle-btn");
     btn.setAttribute("aria-pressed", "true");
     btn.textContent = "■ Stop the jingle";
+    jingleNodes = [];
     const N = { C: 523.25, D: 587.33, E: 659.25, F: 698.46, G: 783.99 };
     const tune =
       "E1 E1 E2 E1 E1 E2 E1 G1 C1.5 D.5 E4 F1 F1 F1.5 F.5 F1 E1 E1 E.5 E.5 E1 D1 D1 E1 D2 G2 " +
       "E1 E1 E2 E1 E1 E2 E1 G1 C1.5 D.5 E4 F1 F1 F1.5 F.5 F1 E1 E1 E.5 E.5 G1 G1 F1 D1 C4";
     const beat = 0.24;
-    let t = audioCtx.currentTime + 0.1;
-    const ctx = audioCtx;
+    let t = ctx.currentTime + 0.1;
     tune.split(" ").forEach((tok) => {
       const freq = N[tok[0]];
       const len = parseFloat(tok.slice(1)) * beat;
@@ -408,16 +447,16 @@
       gain.gain.setValueAtTime(0.0001, t);
       gain.gain.exponentialRampToValueAtTime(0.25, t + 0.02);
       gain.gain.exponentialRampToValueAtTime(0.0001, t + len * 0.95);
-      osc.connect(gain).connect(ctx.destination);
+      osc.connect(gain).connect(out);
       osc.start(t);
       osc.stop(t + len);
-      sleighBell(ctx, t);
+      jingleNodes.push(osc, sleighBell(ctx, out, t));
       t += len;
     });
-    const total = (t - ctx.currentTime) * 1000;
-    setTimeout(() => { if (audioCtx === ctx) playJingle(); }, total + 200);
+    const mine = jingleNodes;
+    jingleTimer = setTimeout(() => { if (jingleNodes === mine) { jingleNodes = null; playJingle(); } }, (t - ctx.currentTime) * 1000 + 200);
   }
-  function sleighBell(ctx, t) {
+  function sleighBell(ctx, out, t) {
     const buf = ctx.createBuffer(1, ctx.sampleRate * 0.08, ctx.sampleRate);
     const data = buf.getChannelData(0);
     for (let i = 0; i < data.length; i++) data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / data.length, 3);
@@ -428,8 +467,9 @@
     hp.frequency.value = 7000;
     const g = ctx.createGain();
     g.gain.value = 0.18;
-    src.connect(hp).connect(g).connect(ctx.destination);
+    src.connect(hp).connect(g).connect(out);
     src.start(t);
+    return src;
   }
 
   /* ---------- Easter eggs ---------- */
@@ -474,6 +514,7 @@
     if (MODES[mode] === "Full Griswold") toast("Full Griswold mode. The neighbors hate this one trick.");
   });
   $("#jingle-btn").addEventListener("click", playJingle);
+  if (window.Sound) window.Sound.onChange((m) => { if (m) stopJingle(); });
 
   const MOON_LINES = [
     "Ho ho ho! You found the moon button. The sleigh is on its way!",
@@ -481,6 +522,7 @@
     "Rudolph's nose is fully charged. Off we go!"
   ];
   function summonSleigh() {
+    sfx("sparkle");
     flySleigh();
     confetti(40);
     santaSay(pick(MOON_LINES), { wink: true });
@@ -497,8 +539,8 @@
   initEasterEggs();
   refreshHeadcount();
 
-  setTimeout(flySleigh, 3500);
+  setTimeout(flySleigh, powered ? 3500 : 9000);
   setInterval(flySleigh, 38000);
 
-  window.Festive = { toast, confetti, santaSay, flySleigh, refreshHeadcount, escapeHtml };
+  window.Festive = { toast, confetti, santaSay, flySleigh, refreshHeadcount, escapeHtml, powerOnLights };
 })();
