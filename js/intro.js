@@ -70,5 +70,5 @@
   intro.querySelector(".intro-skip").addEventListener("click", leave);
   document.addEventListener("keydown", onKey);
 
-  later(open, 1700);   // opens by itself if nobody taps
+  later(open, 8000);   // opens by itself if nobody taps within 8 seconds
 })();

@@ -581,7 +581,7 @@ body.intro-running { overflow: hidden; }
   color: var(--paper);
   cursor: pointer;
   transition: transform .9s cubic-bezier(.7,0,.3,1);
-  animation: introFailsafe 0s 12s forwards;
+  animation: introFailsafe 0s 20s forwards;
 }
 .intro::after {
   /* snowy scalloped bottom edge that shows as the scene lifts */
