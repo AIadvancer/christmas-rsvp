@@ -21,12 +21,12 @@
   }
 
   /* ---------- Old-school C9 string lights ---------- */
-  const BULB_COLORS = ["#ff3b30", "#2ecc71", "#3b82f6", "#ff9f1c", "#ffd60a"];
+  const BULB_COLORS = ["#d2452d", "#4c8552", "#e8a23a", "#b3261e", "#f3d889"];
   const BREAK_LINES = [
     "You broke one. That's coming out of your bonus.",
     "Pop! Facilities has been notified. (They have not.)",
     "Another one bites the dust. Click it again to screw it back in.",
-    "That bulb survived since 1962. Until you.",
+    "That bulb had burned faithfully since 1912. Until you.",
     "The whole strand is on one circuit. Kidding. Probably."
   ];
   const FIX_LINES = ["Screwed it back in. Good as new-ish.", "Fixed! Put that on your resume.", "Let there be light."];
@@ -213,12 +213,12 @@
   const SANTA_LINES = [
     "Ho ho ho! RSVP or it's coal in your inbox.",
     "I've checked my list twice. Your name's not on it yet.",
-    "Yes, the shirts are free. No, you can't have three.",
+    "Yes, the employee sweaters are free. No, you can't have three.",
     "Plus-ones welcome. Plus-twelves, let's talk.",
     "Please don't reply-all. Just use the form.",
     "The elves unionized. I'm handling RSVPs myself this year.",
     "Rudolph is the designated driver. Again.",
-    "Be honest on the shirt size. I've seen what 'medium' does to people.",
+    "Be honest on the sweater size. I've seen what 'medium' does to people.",
     "I know when you're sleeping. I also know you haven't RSVP'd.",
     "Mrs. Claus says I need to stop eating the cookies. Not happening.",
     "I'm just a big guy in a red suit who loves a good spreadsheet.",
@@ -299,7 +299,7 @@
         const ex = box.left + cx * scale;
         const ey = box.top + cy * scale;
         const ang = Math.atan2(e.clientY - ey, e.clientX - ex);
-        const dist = Math.min(4, Math.hypot(e.clientX - ex, e.clientY - ey) / 40);
+        const dist = Math.min(2.4, Math.hypot(e.clientX - ex, e.clientY - ey) / 40);
         p.setAttribute("transform", `translate(${(Math.cos(ang) * dist).toFixed(2)} ${(Math.sin(ang) * dist * 0.7).toFixed(2)})`);
       });
     });
@@ -386,7 +386,7 @@
   /* ---------- Confetti / snow burst ---------- */
   function confetti(count = 90) {
     sfx("confetti");
-    const colors = ["#c8312b", "#1f5a43", "#e2a63b", "#fbf4e6", "#3b82f6"];
+    const colors = ["#b3261e", "#2f4a32", "#c9993b", "#faf3e0", "#c8432b"];
     const w = window.innerWidth, h = window.innerHeight;
     for (let i = 0; i < count; i++) {
       const el = document.createElement("div");
