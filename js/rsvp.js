@@ -16,20 +16,20 @@
   const SIZE_QUIPS = {
     XS: "Tiny but mighty. Like a well-caffeinated elf.",
     S: "Pa-rum-pum-pum-pum. Nice choice.",
-    M: "The Goldilocks of shirts. Just right.",
+    M: "The Goldilocks of sweaters. Just right.",
     L: "Built like a snowman, warm like one too. Wait, no.",
     XL: "Room for second helpings. Smart.",
     "2XL": "The official size of Santa himself. Respect.",
     "3XL": "Planning ahead for the dessert table. We see you."
   };
   const GUEST_QUIPS = [
-    "Flying solo. Respect.",
-    "Me + 1. Classic.",
-    "Bringing a crew!",
+    "Coming alone. Very dignified.",
+    "A party of two. Charming!",
+    "Quite the company you keep!",
     "That's a whole sleigh-full.",
     "Santa's impressed. And slightly worried."
   ];
-  const ORNAMENT_COLORS = ["#c8312b", "#1f5a43", "#e2a63b", "#3b82f6", "#d946ef"];
+  const ORNAMENT_COLORS = ["#b3261e", "#2f4a32", "#c9993b", "#8e1b16", "#5e7355"];
 
   /* ---------- Shirt size tags ---------- */
   const sizeBox = $("#sizes");
@@ -168,13 +168,13 @@
     const fail = (key, msg, focusEl) => { setError(key, msg); ok = false; first = first || focusEl; };
 
     ["name", "attending", "shirtSize", "guests"].forEach(clearError);
-    if (d.name.length < 2) fail("name", "Santa needs your name. Even he can't guess this one.", $("#name"));
-    if (!d.attending) fail("attending", "Pick one: festive or humbug?", form.querySelector('input[name="attending"]'));
+    if (d.name.length < 2) fail("name", "Your name, if you please. Even Santa cannot guess it.", $("#name"));
+    if (!d.attending) fail("attending", "Kindly mark one box: merry, or humbug?", form.querySelector('input[name="attending"]'));
     if (d.attending === "Yes") {
-      if (!d.shirtSize) fail("shirtSize", "Pick a shirt size. No judgment. (Some judgment.)", form.querySelector('input[name="shirtSize"]'));
+      if (!d.shirtSize) fail("shirtSize", "Kindly choose a sweater size. We pass no judgment. (Very little, at any rate.)", form.querySelector('input[name="shirtSize"]'));
       const rows = [...guestBox.querySelectorAll(".guest:not(.leaving)")];
       d.guests.forEach((g, i) => {
-        if (g.name.length < 2) fail("guests", `Guest ${i + 1} needs a name. "Plus one" is not a name.`, rows[i].querySelector(".guest-name"));      });
+        if (g.name.length < 2) fail("guests", `Guest No. ${i + 1} wants a name. "Plus one" will not do.`, rows[i].querySelector(".guest-name"));      });
     }
     if (first) first.focus();
     return ok;
@@ -233,7 +233,7 @@
     } catch (err) {
       console.error(err);
       sfx("error");
-      status.textContent = "The elves dropped your RSVP in the snow. Please try again in a moment.";
+      status.textContent = "The elves dropped your coupon in the snow. Kindly try again in a moment.";
       F.santaSay("Uh oh. The North Pole Wi-Fi is acting up. Try again?");
     } finally {
       btn.classList.remove("sending");
@@ -247,7 +247,7 @@
     const first = d.name.split(" ")[0];
     const coming = d.attending === "Yes";
 
-    $("#success-title").textContent = coming ? "You're on the Nice List!" : "We'll miss you!";
+    $("#success-title").textContent = coming ? "You're on the Nice List!" : "You shall be missed!";
     $("#success-msg").textContent = coming
       ? `See you there, ${first}! Santa's saving you a cookie.${result.updated ? " (We updated your earlier RSVP.)" : ""}`
       : `Santa is sad but understanding, ${first}. If plans change, come back and update your RSVP.`;
@@ -260,9 +260,9 @@
     let rows = `
       <div class="stub-head"><span>${coming ? `ADMIT ${total}` : "REGRETS"}</span><span>No. ${String(Math.floor(Math.random() * 9000) + 1000)}</span></div>
       <div class="stub-row"><span>Name</span><span>${esc(d.name)}</span></div>
-      <div class="stub-row"><span>Coming?</span><span>${coming ? "Yes!" : "Not this year"}</span></div>`;
+      <div class="stub-row"><span>Attending</span><span>${coming ? "With bells on" : "Regrets, this year"}</span></div>`;
     if (coming) {
-      rows += `<div class="stub-row"><span>Shirt</span><span>${esc(sizeLabel(d.shirtSize))}</span></div>`;
+      rows += `<div class="stub-row"><span>Sweater</span><span>${esc(sizeLabel(d.shirtSize))}</span></div>`;
       const guestLines = d.guests.map((g) => esc(g.name));
       if (d.extraGuests) guestLines.push(`+ ${d.extraGuests} more`);
       rows += `<div class="stub-row"><span>Guests</span><span>${guestLines.length ? guestLines.join("<br>") : "Just me"}</span></div>`;
