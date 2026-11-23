@@ -623,7 +623,6 @@ input[type="text"]:focus, textarea:focus, select:focus {
   transition: background-color .15s, color .15s;
 }
 .size-tag b { font-family: var(--f-head); font-weight: 900; font-size: 1.15rem; line-height: 1.1; }
-.size-tag small { font-style: italic; font-size: .75rem; line-height: 1.25; margin-top: 2px; }
 .size-tag:hover span { background: rgba(201, 153, 59, .2); }
 .size-tag input:checked + span {
   color: var(--paper-hi); background: var(--red);
@@ -632,8 +631,7 @@ input[type="text"]:focus, textarea:focus, select:focus {
 }
 .size-tag input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: 3px; }
 @keyframes stampIn { from { transform: scale(1.08); } to { transform: none; } }
-.size-quip, .step-quip { font-style: italic; font-size: .98rem; color: var(--green-dk); }
-.size-quip { margin: 9px 0 0; min-height: 1.6em; }
+.step-quip { font-style: italic; font-size: .98rem; color: var(--green-dk); }
 
 /* guest stepper */
 .stepper { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }

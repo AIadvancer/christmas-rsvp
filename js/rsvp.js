@@ -13,15 +13,6 @@
   const namedGuests = Number(CFG.namedGuests) || 2;
   const maxExtra = Number(CFG.maxExtraGuests) || 10;
 
-  const SIZE_QUIPS = {
-    XS: "Tiny but mighty. Like a well-caffeinated elf.",
-    S: "Pa-rum-pum-pum-pum. Nice choice.",
-    M: "The Goldilocks of sweaters. Just right.",
-    L: "Built like a snowman, warm like one too. Wait, no.",
-    XL: "Room for second helpings. Smart.",
-    "2XL": "The official size of Santa himself. Respect.",
-    "3XL": "Planning ahead for the dessert table. We see you."
-  };
   const GUEST_QUIPS = [
     "Coming alone. Very dignified.",
     "A party of two. Charming!",
@@ -33,18 +24,16 @@
 
   /* ---------- Shirt size tags ---------- */
   const sizeBox = $("#sizes");
-  sizes.forEach(([value, label]) => {
+  sizes.forEach(([value]) => {
     const l = document.createElement("label");
     l.className = "size-tag";
-    l.innerHTML = `<input type="radio" name="shirtSize"><span><b></b><small></small></span>`;
+    l.innerHTML = `<input type="radio" name="shirtSize"><span><b></b></span>`;
     l.querySelector("input").value = value;
     l.querySelector("b").textContent = value;
-    l.querySelector("small").textContent = label;
     sizeBox.appendChild(l);
   });
   sizeBox.addEventListener("change", (e) => {
     sfx("sizeNote", sizes.findIndex(([v]) => v === e.target.value));
-    $("#size-quip").textContent = SIZE_QUIPS[e.target.value] || "Excellent choice.";
     clearError("shirtSize");
   });
 
@@ -255,7 +244,7 @@
     const total = coming ? 1 + d.guests.length + d.extraGuests : 0;
     const sizeLabel = (v) => {
       const s = sizes.find(([val]) => val === v);
-      return s ? `${s[0]} (${s[1]})` : v;
+      return s ? s[0] : v;
     };
     let rows = `
       <div class="stub-head"><span>${coming ? `ADMIT ${total}` : "REGRETS"}</span><span>No. ${String(Math.floor(Math.random() * 9000) + 1000)}</span></div>

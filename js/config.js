@@ -20,15 +20,15 @@ window.PARTY_CONFIG = {
   namedGuests: 2,
   maxExtraGuests: 10,
 
-  // Shirt sizes: [value saved to the sheet, funny name on the button]
+  // Sweater sizes: [value saved to the sheet and shown on the button, full name]
   shirtSizes: [
-    ["XS",  "Elf"],
-    ["S",   "Little Drummer"],
-    ["M",   "Mid-Size Reindeer"],
-    ["L",   "Snowman"],
-    ["XL",  "Big Fella"],
-    ["2XL", "Full Santa"],
-    ["3XL", "Santa After Cookies"]
+    ["XS",  "Extra Small"],
+    ["S",   "Small"],
+    ["M",   "Medium"],
+    ["L",   "Large"],
+    ["XL",  "Extra Large"],
+    ["2XL", "2X Large"],
+    ["3XL", "3X Large"]
   ],
 
   // Show "X people are coming so far" on the page (pulled from the sheet).

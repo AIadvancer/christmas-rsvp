@@ -218,7 +218,6 @@
     "Please don't reply-all. Just use the form.",
     "The elves unionized. I'm handling RSVPs myself this year.",
     "Rudolph is the designated driver. Again.",
-    "Be honest on the sweater size. I've seen what 'medium' does to people.",
     "I know when you're sleeping. I also know you haven't RSVP'd.",
     "Mrs. Claus says I need to stop eating the cookies. Not happening.",
     "I'm just a big guy in a red suit who loves a good spreadsheet.",
